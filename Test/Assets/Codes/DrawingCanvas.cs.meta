@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 186e6d73a7fd1f841a1d955239f43cab
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - drawingSurface: {instanceID: 0}
+  - canvasTexture: {instanceID: 0}
+  - confirmButton: {fileID: 3871040574661454086, guid: dbb1c24668890da469cc87e7c0478864, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
