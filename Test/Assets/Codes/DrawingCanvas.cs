@@ -6,30 +6,49 @@ public class DrawingCanvas : MonoBehaviour
 {
     public RawImage drawingSurface; // Inspector에서 할당
     public Texture2D canvasTexture;
-    public Color drawColor = Color.black;
-    public int brushSize = 5;
+    public int brushSize = 3;
+
+    // 펜 색상과 지우개(흰색) 색상 정의
+    //public Color penColor = Color.black;
+    public Color eraserColor = Color.white;
+    public Color currentColor = Color.black;
+    public Color lastPenColor = Color.black; 
 
     private bool isDrawing = false;
     private Vector2 previousMousePos; // 이전 프레임에서의 마우스 위치 저장
+    private DrawingMode currentMode = DrawingMode.Pen;
+
 
     void Start()
     {
-        // 빈 텍스처 생성
-        canvasTexture = new Texture2D(512, 512);
+        InitializeCanvas();
+    }
+
+    private void InitializeCanvas()
+    { // 알파 채널을 지원하는 RGBA32 포맷으로 텍스처 생성
+        canvasTexture = new Texture2D(512, 512,TextureFormat.RGBA32, false);
+
+        // 텍스처의 필터 모드를 Point로 설정하여 픽셀이 선명하게 보이도록 함
+        canvasTexture.filterMode = FilterMode.Point;
         drawingSurface.texture = canvasTexture;
 
-        // 캔버스를 하얀색 배경으로 초기화
-        ClearCanvas();
+        // 초기 펜 색상을 검정색으로 설정
+        currentColor = Color.black;
 
-        
+        ClearCanvas();
     }
 
     void Update()
     {
+        HandleDrawingInput();
+    }
+
+    private void HandleDrawingInput()
+    {
         if (Input.GetMouseButtonDown(0))
         {
             isDrawing = true;
-            previousMousePos = GetMousePosition(); // 마우스를 클릭한 순간 위치 저장
+            previousMousePos = GetMousePosition();
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -84,20 +103,58 @@ public class DrawingCanvas : MonoBehaviour
         float distance = Vector2.Distance(start, end);
         Vector2 direction = (end - start).normalized;
 
+        // 현재 모드에 따라 브러시 크기 조절(지우개 크기 조절하려면 ?brushSize * n
+        int currentBrushSize = currentMode == DrawingMode.Eraser ? brushSize  : brushSize;
+
         for (float i = 0; i <= distance; i += 0.1f)
         {
             Vector2 point = start + direction * i;
 
             // 브러쉬 크기만큼 점을 찍기
-            for (int dx = -brushSize; dx <= brushSize; dx++)
+            for (int dx = -currentBrushSize; dx <= currentBrushSize; dx++)
             {
-                for (int dy = -brushSize; dy <= brushSize; dy++)
+                for (int dy = -currentBrushSize; dy <= currentBrushSize; dy++)
                 {
-                    canvasTexture.SetPixel((int)point.x + dx, (int)point.y + dy, drawColor);
+                    // 텍스처 범위 체크
+                    int pixelX = (int)point.x + dx;
+                    int pixelY = (int)point.y + dy;
+
+                    if (pixelX >= 0 && pixelX < canvasTexture.width &&
+                        pixelY >= 0 && pixelY < canvasTexture.height)
+                    {
+                        Color drawColor = currentMode == DrawingMode.Eraser ? eraserColor : currentColor; //색 지정
+                        canvasTexture.SetPixel(pixelX, pixelY, currentColor);
+                    }
                 }
             }
         }
     }
+
+
+    public void SetPenMode()
+    {
+        currentMode = DrawingMode.Pen;
+        currentColor = lastPenColor;
+        brushSize = 3; // 펜 모드의 기본 브러시 크기
+    }
+
+    public void SetEraserMode()
+    {
+        currentMode = DrawingMode.Eraser;
+        currentColor = eraserColor;
+        brushSize = 8; // 지우개 모드의 기본 브러시 크기
+    }
+
+    public void SetPenColor(Color newColor)
+    {
+        newColor.a = 1f; // 알파값을 1로 설정
+        currentColor = newColor;
+        lastPenColor = newColor;
+        // 색상이 변경되면 자동으로 펜 모드로 전환
+        currentMode = DrawingMode.Pen; // 펜 모드로 전환하되 색상은 유지
+        SetPenMode();
+    }
+
 
     public void ClearCanvas()
     {
@@ -136,6 +193,12 @@ public class DrawingCanvas : MonoBehaviour
         Debug.Log($"Texture saved as: {fullPath}");
 
         ClearCanvas();
+    }
+
+    public enum DrawingMode
+    {
+        Pen,
+        Eraser
     }
 
 }
