@@ -172,12 +172,62 @@ public class DrawingCanvas : MonoBehaviour
     //확인 버튼 누르면 이미지 파일로 저장되도록
     public void SaveCanvasAsTexture()
     {
+        ////원래대로 흰 배경 저장///
+        //string folderPath = Path.Combine(Application.dataPath, "tmp_texture");
+        //if (!Directory.Exists(folderPath))
+        //{
+        //    Directory.CreateDirectory(folderPath);
+        //}
+        ////인덱스
+        //string fileName = "tmp_000";
+        //int fileIndex = 0;
+        //while (File.Exists(Path.Combine(folderPath, fileName + ".png")))
+        //{
+        //    fileIndex++;
+        //    fileName = $"tmp_{fileIndex:D3}";
+        //}
+
+        //string fullPath = Path.Combine(folderPath, fileName + ".png");
+        //byte[] pngData = canvasTexture.EncodeToPNG();
+        //File.WriteAllBytes(fullPath, pngData);
+
+        //Debug.Log($"Texture saved as: {fullPath}");
+
+        //ClearCanvas();
+
+        ///투명 배경 저장
+        ///
+        // 임시 텍스처 생성 (투명 배경용)
+        Texture2D transparentTexture = new Texture2D(canvasTexture.width, canvasTexture.height, TextureFormat.RGBA32, false);
+
+        // 모든 픽셀을 투명하게 초기화
+        Color[] pixels = new Color[canvasTexture.width * canvasTexture.height];
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            pixels[i] = Color.clear;
+        }
+        transparentTexture.SetPixels(pixels);
+
+        // 원본 캔버스의 흰색이 아닌 픽셀만 복사
+        for (int x = 0; x < canvasTexture.width; x++)
+        {
+            for (int y = 0; y < canvasTexture.height; y++)
+            {
+                Color pixelColor = canvasTexture.GetPixel(x, y);
+                if (pixelColor != Color.white)
+                {
+                    transparentTexture.SetPixel(x, y, pixelColor);
+                }
+            }
+        }
+        transparentTexture.Apply();
+
         string folderPath = Path.Combine(Application.dataPath, "tmp_texture");
         if (!Directory.Exists(folderPath))
         {
             Directory.CreateDirectory(folderPath);
         }
-        //인덱스
+
         string fileName = "tmp_000";
         int fileIndex = 0;
         while (File.Exists(Path.Combine(folderPath, fileName + ".png")))
@@ -187,10 +237,13 @@ public class DrawingCanvas : MonoBehaviour
         }
 
         string fullPath = Path.Combine(folderPath, fileName + ".png");
-        byte[] pngData = canvasTexture.EncodeToPNG();
+        byte[] pngData = transparentTexture.EncodeToPNG();
         File.WriteAllBytes(fullPath, pngData);
 
         Debug.Log($"Texture saved as: {fullPath}");
+
+        // 임시 텍스처 정리
+        Destroy(transparentTexture);
 
         ClearCanvas();
     }
