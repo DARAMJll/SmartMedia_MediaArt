@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using UnityEditor;
+using static UnityEditor.U2D.ScriptablePacker;
 
 public class DrawingCanvas : MonoBehaviour
 {
@@ -17,6 +19,20 @@ public class DrawingCanvas : MonoBehaviour
     private bool isDrawing = false;
     private Vector2 previousMousePos; // 이전 프레임에서의 마우스 위치 저장
     private DrawingMode currentMode = DrawingMode.Pen;
+
+    private string GetPrefabPath()
+    {
+        // 현재 스크립트의 위치에서 상대 경로로 프리팹 찾기
+        string scriptPath = AssetDatabase.GetAssetPath(MonoScript.FromMonoBehaviour(this));
+        string scriptDirectory = Path.GetDirectoryName(scriptPath);
+        return Path.Combine(Path.GetDirectoryName(scriptDirectory), "Lamp/Lamp_prefab.prefab");
+    }
+
+
+    /// Lamps
+    
+    public Transform spawnPoint; // 램프가 생성될 위치
+    public GameObject lampPrefab;
 
 
     void Start()
@@ -242,8 +258,112 @@ public class DrawingCanvas : MonoBehaviour
 
         Debug.Log($"Texture saved as: {fullPath}");
 
-        // 임시 텍스처 정리
-        Destroy(transparentTexture);
+        // 파일이 저장된 후 약간의 딜레이를 주어 AssetDatabase가 파일을 인식하도록 함
+        AssetDatabase.Refresh();
+
+        // 저장된 텍스처 파일 로드
+        string texturePath = "Assets" + fullPath.Substring(Application.dataPath.Length);
+        //Texture2D savedTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+        //if (savedTexture == null)
+        //{
+        //    Debug.LogError($"Failed to load texture at path: {texturePath}");
+        //    return;
+        //}
+
+
+        TextureImporter textureImporter = AssetImporter.GetAtPath(texturePath) as TextureImporter;
+
+        if (textureImporter != null)
+        {
+            textureImporter.textureType = TextureImporterType.Default;
+            textureImporter.alphaIsTransparency = true;
+            AssetDatabase.ImportAsset(texturePath);
+        }
+
+
+        // 램프 프리팹 생성 및 텍스처 적용
+        //GameObject newLamp = Instantiate(lampPrefab, spawnPoint.position, spawnPoint.rotation);
+
+        //// 램프의 메터리얼 찾기
+        //Renderer lampRenderer = newLamp.GetComponent<Renderer>();
+        //if (lampRenderer != null)
+        //{
+        //    // 새로운 메터리얼 인스턴스 생성
+        //    Material newMaterial = new Material(lampRenderer.material);
+        //    newMaterial.mainTexture = transparentTexture;
+        //    lampRenderer.material = newMaterial;
+        //}
+
+        //newLamp.name = $"Lamp_{fileName}";
+        //Debug.Log($"Lamp created with texture: {fullPath}");
+
+        //ClearCanvas();
+
+
+
+
+        // 저장된 텍스처 로드
+        Texture2D savedTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
+        if (savedTexture == null)
+        {
+            Debug.LogError($"Failed to load texture at path: {texturePath}");
+            return;
+        }
+
+
+        // 새로운 Material 생성
+        Material newMaterial = new Material(Shader.Find("Legacy Shaders/Transparent/Diffuse"));
+        newMaterial.mainTexture = savedTexture;
+
+        // Material 저장
+        string materialFolderPath = Path.Combine(folderPath, "Materials");
+        if (!Directory.Exists(materialFolderPath))
+        {
+            Directory.CreateDirectory(materialFolderPath);
+        }
+
+        string materialFileName = $"Mat_{fileIndex:D3}";
+        string materialPath = Path.Combine(materialFolderPath, materialFileName + ".mat");
+        string materialAssetPath = "Assets" + materialPath.Substring(Application.dataPath.Length);
+        AssetDatabase.CreateAsset(newMaterial, materialAssetPath);
+        AssetDatabase.SaveAssets();
+
+        //// 프리팹 경로 가져오기
+        //string scriptPath = AssetDatabase.GetAssetPath(MonoScript.FromMonoBehaviour(this));
+        //string scriptDirectory = Path.GetDirectoryName(scriptPath);
+        //string prefabPath = Path.Combine(Path.GetDirectoryName(scriptDirectory), "Lamp/Lamp_prefab.prefab");
+
+
+        //// 프리팹 로드 및 인스턴스화
+        //GameObject lampPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(lampPrefabPath);
+        //if (lampPrefab == null)
+        //{
+        //    Debug.LogError($"Failed to load lamp prefab at path: {lampPrefabPath}");
+        //    return;
+        //}
+
+        GameObject newLamp = Instantiate(lampPrefab, spawnPoint.position, spawnPoint.rotation);
+        Transform lampCube = newLamp.transform.Find("Subdivision_Surface/lampCube");
+
+        if (lampCube != null)
+        {
+            Renderer cubeRenderer = lampCube.GetComponent<Renderer>();
+            if (cubeRenderer != null)
+            {
+                cubeRenderer.material = newMaterial;
+            }
+            else
+            {
+                Debug.LogError("Cube Renderer not found!");
+            }
+        }
+        else
+        {
+            Debug.LogError("Cube named 'lampcube' not found in lamp prefab!");
+        }
+
+        newLamp.name = $"Lamp_{fileName}";
+        Debug.Log($"Lamp created with material: {materialFileName}");
 
         ClearCanvas();
     }
