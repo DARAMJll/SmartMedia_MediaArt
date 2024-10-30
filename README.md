@@ -5,3 +5,7 @@
 
 ### 초기 설정
 Edit - Project Settings - Player - Other Settings - Allow downloads over HTTP - Allow in developments builds
+
+
+### 머티리얼 오류 뜰 때(핑크 화면)
+https://makerejoicegames.tistory.com/405
