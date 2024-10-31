@@ -10,6 +10,8 @@ public class DrawingCanvas : MonoBehaviour
     public Texture2D canvasTexture;
     public int brushSize = 3;
 
+    public Slider brushSlider;
+
     // 펜 색상과 지우개(흰색) 색상 정의
     //public Color penColor = Color.black;
     public Color eraserColor = Color.white;
@@ -32,10 +34,10 @@ public class DrawingCanvas : MonoBehaviour
     /// Lamps
     
     public Transform spawnPoint; // 램프가 생성될 위치
-    public GameObject lampPrefab;
+	//public GameObject lampPrefab;
+	public GameObject[] lampPrefabs; // Inspector에서 5개의 램프 프리팹 할당
 
-
-    void Start()
+	void Start()
     {
         InitializeCanvas();
     }
@@ -76,6 +78,10 @@ public class DrawingCanvas : MonoBehaviour
         {
             Draw();
         }
+    }
+
+    public void setbrushSize(){
+        brushSize = (int)brushSlider.value;
     }
 
     void Draw()
@@ -135,13 +141,13 @@ public class DrawingCanvas : MonoBehaviour
                     int pixelX = (int)point.x + dx;
                     int pixelY = (int)point.y + dy;
 
-                    if (pixelX >= 0 && pixelX < canvasTexture.width &&
-                        pixelY >= 0 && pixelY < canvasTexture.height)
-                    {
-                        Color drawColor = currentMode == DrawingMode.Eraser ? eraserColor : currentColor; //색 지정
-                        canvasTexture.SetPixel(pixelX, pixelY, currentColor);
-                    }
-                }
+					if (pixelX >= 0 && pixelX < canvasTexture.width &&
+					    pixelY >= 0 && pixelY < canvasTexture.height)
+					{
+						Color drawColor = currentMode == DrawingMode.Eraser ? eraserColor : currentColor;
+						canvasTexture.SetPixel(pixelX, pixelY, drawColor); // currentColor를 drawColor로 수정
+					}
+				}
             }
         }
     }
@@ -151,14 +157,14 @@ public class DrawingCanvas : MonoBehaviour
     {
         currentMode = DrawingMode.Pen;
         currentColor = lastPenColor;
-        brushSize = 3; // 펜 모드의 기본 브러시 크기
+        //brushSize = 3; // 펜 모드의 기본 브러시 크기
     }
 
     public void SetEraserMode()
     {
         currentMode = DrawingMode.Eraser;
         currentColor = eraserColor;
-        brushSize = 8; // 지우개 모드의 기본 브러시 크기
+        //brushSize = 8; // 지우개 모드의 기본 브러시 크기
     }
 
     public void SetPenColor(Color newColor)
@@ -311,9 +317,11 @@ public class DrawingCanvas : MonoBehaviour
         }
 
 
-        // 새로운 Material 생성
-        Material newMaterial = new Material(Shader.Find("Legacy Shaders/Transparent/Diffuse"));
-        newMaterial.mainTexture = savedTexture;
+		// 새로운 Material 생성
+		//Material newMaterial = new Material(Shader.Find("Legacy Shaders/Transparent/Diffuse"));
+		Material templateMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/tmp_texture/Materials/Default_Mat.mat");
+		Material newMaterial = new Material(templateMaterial);
+		newMaterial.mainTexture = savedTexture;
 
         // Material 저장
         string materialFolderPath = Path.Combine(folderPath, "Materials");
@@ -328,24 +336,27 @@ public class DrawingCanvas : MonoBehaviour
         AssetDatabase.CreateAsset(newMaterial, materialAssetPath);
         AssetDatabase.SaveAssets();
 
-        //// 프리팹 경로 가져오기
-        //string scriptPath = AssetDatabase.GetAssetPath(MonoScript.FromMonoBehaviour(this));
-        //string scriptDirectory = Path.GetDirectoryName(scriptPath);
-        //string prefabPath = Path.Combine(Path.GetDirectoryName(scriptDirectory), "Lamp/Lamp_prefab.prefab");
+		if (lampPrefabs == null || lampPrefabs.Length == 0)
+		{
+			Debug.LogError("No lamp prefabs assigned!");
+			return;
+		}
 
+		// 프리팹 배열 상태 확인을 위한 디버그 로그 추가
+		Debug.Log($"Number of lamp prefabs: {lampPrefabs.Length}");
 
-        //// 프리팹 로드 및 인스턴스화
-        //GameObject lampPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(lampPrefabPath);
-        //if (lampPrefab == null)
-        //{
-        //    Debug.LogError($"Failed to load lamp prefab at path: {lampPrefabPath}");
-        //    return;
-        //}
+		// 랜덤으로 프리팹 선택
+		int randomIndex = Random.Range(0, lampPrefabs.Length);
+		GameObject selectedPrefab = lampPrefabs[randomIndex];
 
-        GameObject newLamp = Instantiate(lampPrefab, spawnPoint.position, spawnPoint.rotation);
-        Transform lampCube = newLamp.transform.Find("Subdivision_Surface/lampCube");
+		// 선택된 프리팹으로 램프 생성
+		GameObject newLamp = Instantiate(selectedPrefab, spawnPoint.position, spawnPoint.rotation);
+		Transform lampCube = newLamp.transform.Find("Subdivision_Surface/lampCube");
 
-        if (lampCube != null)
+		// 선택된 프리팹 확인을 위한 디버그 로그 추가
+		Debug.Log($"Selected prefab index: {randomIndex}, Prefab name: {selectedPrefab.name}");
+
+		if (lampCube != null)
         {
             Renderer cubeRenderer = lampCube.GetComponent<Renderer>();
             if (cubeRenderer != null)
