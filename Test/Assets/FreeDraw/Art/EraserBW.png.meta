@@ -1,5 +1,9 @@
 fileFormatVersion: 2
-guid: 5513a8170a325d042bb0c544b06d1da2
+<<<<<<<< Updated upstream:Test/Assets/FreeDraw/Art/EraserBW.png.meta
+guid: 4531b564ec120b948aabcc0b3b7faeaf
+========
+guid: be25b918c8b51be4aafbc837b9544168
+>>>>>>>> Stashed changes:Test/Assets/소원종이.png.meta
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -50,7 +54,7 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
-  alphaIsTransparency: 1
+  alphaIsTransparency: 0
   spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1

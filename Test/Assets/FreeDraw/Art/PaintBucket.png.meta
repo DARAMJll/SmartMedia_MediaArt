@@ -1,5 +1,9 @@
 fileFormatVersion: 2
-guid: a3f142ce24d0ca44bb06d5eaf6bd8aaf
+<<<<<<<< Updated upstream:Test/Assets/FreeDraw/Art/PaintBucket.png.meta
+guid: 3c4fe8a27c8249843bf903a915cce9dc
+========
+guid: 799c000a2c260e4459ac209965d79718
+>>>>>>>> Stashed changes:Test/Assets/FreeDraw/Art/hanji3.jpg.meta
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -50,7 +54,7 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
-  alphaIsTransparency: 1
+  alphaIsTransparency: 0
   spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1
@@ -86,7 +90,11 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
+<<<<<<<< Updated upstream:Test/Assets/FreeDraw/Art/PaintBucket.png.meta
     forceMaximumCompressionQuality_BC6H_BC7: 1
+========
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+>>>>>>>> Stashed changes:Test/Assets/FreeDraw/Art/hanji3.jpg.meta
   spriteSheet:
     serializedVersion: 2
     sprites: []

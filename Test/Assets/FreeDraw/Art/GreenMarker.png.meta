@@ -1,5 +1,9 @@
 fileFormatVersion: 2
-guid: 641dfc3ece306034e919b2fe9b7723bd
+<<<<<<<< Updated upstream:Test/Assets/FreeDraw/Art/GreenMarker.png.meta
+guid: 229130f1295943749826ce46b087a17e
+========
+guid: fe04039cb602a3b409a0f923da8087ff
+>>>>>>>> Stashed changes:Test/Assets/FreeDraw/Art/hanji2.jpg.meta
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -50,7 +54,7 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
-  alphaIsTransparency: 1
+  alphaIsTransparency: 0
   spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1
@@ -86,7 +90,11 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
+<<<<<<<< Updated upstream:Test/Assets/FreeDraw/Art/GreenMarker.png.meta
     forceMaximumCompressionQuality_BC6H_BC7: 1
+========
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+>>>>>>>> Stashed changes:Test/Assets/FreeDraw/Art/hanji2.jpg.meta
   spriteSheet:
     serializedVersion: 2
     sprites: []
