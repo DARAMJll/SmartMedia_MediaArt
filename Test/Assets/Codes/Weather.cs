@@ -5,11 +5,36 @@ using System;
 using UnityEngine.Networking;
 using System.Xml;
 
+using UnityEngine.Rendering;
+using UnityEditor;
+
 //단기예보조회
 
 public class Weather : MonoBehaviour
 {
-    int Time;   //현재 시간 (HH)    base_Time 구하는 함수에 사용됨
+
+	[Header("Skybox Materials")]
+	public Material sunsetClearSkybox;      // Cartoon Base NightSky
+	public Material sunsetCloudySkybox;     // Deep Dusk
+	public Material nightClearSkybox;       // Cold Night
+	public Material nightCloudySkybox;      // AllSky_Night_MoonBurst
+	public Material dayClearSkybox;         // Day_BlueSky_Nothing
+	public Material dayPartlyCloudySkybox;  // Epic_BlueSunset
+	public Material dayCloudySkybox;        // Epic_GloriousPink
+
+	private string currentSkyCondition = ""; // 현재 하늘 상태 저장
+
+	[Header("Test Mode")]
+	public bool isTestMode = false;  // 테스트 모드 활성화 여부
+	[Range(0, 23)]
+	public int testHour = 0;        // 테스트할 시간
+	public enum WeatherCondition { 맑음, 구름많음, 흐림 }
+	public WeatherCondition testWeather = WeatherCondition.맑음;  // 테스트할 날씨
+	public bool applyTest = false;   // 테스트 설정 적용 버튼 (Inspector에서 체크박스로 표시됨)
+
+
+
+	int Time;   //현재 시간 (HH)    base_Time 구하는 함수에 사용됨
     string base_date;    //현재 날짜 yyyy.MM.dd     나중에 url에 사용됨 
 
     //base_time : 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300 (1일 8회)
@@ -36,15 +61,49 @@ public class Weather : MonoBehaviour
         Geturl();
 
         StartCoroutine(LoadData());
+		//UpdateSkybox(); // 시작할 때 하늘 배경 업데이트
 
-        Debug.Log("Time:" + Time + " base_Date:" + base_date + " base_Time:" + base_time);
+		Debug.Log("Time:" + Time + " base_Date:" + base_date + " base_Time:" + base_time);
         Debug.Log("getTime:" + get_Time);
     }
 
-    //base_Time 구해주는 함수 추후 url 구할때 쓰임
-    //base_time : 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300 (1일 8회) 따라서 스위치도 해당 방법으로 저장 
-    // 02 -> 03, 05 -> 06 이런식으로 base_time보다 1시간 앞에것 나옴 
-    public void Get_Base_Time(int time)
+	void Update()
+	{
+		if (isTestMode && applyTest)
+		{
+			ApplyTestSettings();
+			applyTest = false;  // 자동으로 체크 해제
+		}
+	}
+
+	private void ApplyTestSettings()
+	{
+		if (isTestMode)
+		{
+			get_Time = $"{testHour:D2}00";
+			UpdateSkybox(testWeather.ToString());
+			Debug.Log($"Test settings applied - Time: {testHour}:00, Weather: {testWeather}");
+		}
+	}
+
+	// Unity Inspector에서 스카이박스 머티리얼 할당을 위한 OnValidate
+	private void OnValidate()
+	{
+		sunsetClearSkybox = AssetDatabase.LoadAssetAtPath<Material>("Assets/AllSkyFree/Cartoon Base NightSky/Cartoon Base NightSky.mat");
+		sunsetCloudySkybox = AssetDatabase.LoadAssetAtPath<Material>("Assets/AllSkyFree/Deep Dusk/Deep Dusk.mat");
+		nightClearSkybox = AssetDatabase.LoadAssetAtPath<Material>("Assets/AllSkyFree/Cold Night/Cold Night.mat");
+		nightCloudySkybox = AssetDatabase.LoadAssetAtPath<Material>("Assets/AllSkyFree/Night MoonBurst/AllSky_Night_MoonBurst Equirect.mat");
+		dayClearSkybox = AssetDatabase.LoadAssetAtPath<Material>("Assets/AllSkyFree/Cartoon Base BlueSky/Day_BlueSky_Nothing.mat");
+		dayPartlyCloudySkybox = AssetDatabase.LoadAssetAtPath<Material>("Assets/AllSkyFree/Epic_BlueSunset/Epic_BlueSunset.mat");
+		dayCloudySkybox = AssetDatabase.LoadAssetAtPath<Material>("Assets/AllSkyFree/Epic_GloriousPink/Epic_GloriousPink.mat");
+	}
+
+	
+
+	//base_Time 구해주는 함수 추후 url 구할때 쓰임
+	//base_time : 0200, 0500, 0800, 1100, 1400, 1700, 2000, 2300 (1일 8회) 따라서 스위치도 해당 방법으로 저장 
+	// 02 -> 03, 05 -> 06 이런식으로 base_time보다 1시간 앞에것 나옴 
+	public void Get_Base_Time(int time)
     {
         switch (time)
         {
@@ -179,24 +238,7 @@ public class Weather : MonoBehaviour
 
     }
 
-    //url 구하는 함수 
-
-    //public void Geturl()
-    //{
-    //    url = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
-    //    url += "?ServiceKey=" + "XtDPA1fEnePF0FZU5BhnMkykFdyFDEJtZh%2FznJJ9AVBbXVUte9F2dylUfh6Dg86e9jQzf%2BbDCAooHg4GEOkKCA%3D%3D"; //api 인증 키
-    //    //한 시간대에 있는 아이템값은 총 12개임 1100이면 총 12개가 있음 base_time 구할 때 switch보면 최대 3개씩 가져오니까 36개로 변경
-    //    url += "&numOfRows=36";             // 한페이지 결과 수(Default : 12)  //★ 이 부분 36로 변경  
-    //    url += "&pageNo=1";                 // 페이지 번호(Default : 1)
-    //    url += "&dataType=XML";             // 받을 자료형식(XML, JSON)
-    //                                        //url += "&ftype=ODAM";
-    //    url += "&base_date=" + base_date;   // 요청 날짜(yyMMdd)
-    //    url += "&base_time=" + base_time;   // 요청 시간(HHmm)
-    //    url += "&nx=55";                    // 요청 지역 x좌표
-    //    url += "&ny=127";                   // 요청 지역 y좌료
-
-    //    Debug.Log(url);
-    //}
+    
 
     public void Geturl()
     {
@@ -213,87 +255,7 @@ public class Weather : MonoBehaviour
         //Debug.Log(url);
     }
 
-    //url 안에 데이터 불러오기 성공 
-    //IEnumerator LoadData()
-    //{
-    //    UnityWebRequest www = UnityWebRequest.Get(url);
-
-    //    yield return www.SendWebRequest();
-    //    if (www.error == null)   //불러오기 성공
-    //    {
-    //        //정보값들 출력 
-    //        Debug.Log(www.downloadHandler.text);
-    //    }
-
-    //    XmlDocument xml = new XmlDocument();
-    //    xml.Load(url);
-    //    XmlNodeList xmResponse = xml.GetElementsByTagName("response");  //response 기준으로 생성
-    //    XmlNodeList xmlList = xml.GetElementsByTagName("item");
-
-    //    //XML 파일 뜯어서 정보를 불러옴 
-    //    foreach (XmlNode node in xmResponse)
-    //    {
-    //        if (node["header"]["resultMsg"].InnerText.Equals("NORMAL_SERVICE")) // 정상 응답일 경우
-    //        {
-    //            foreach (XmlNode node1 in xmlList)  // <item> 값 읽어 들이기
-    //            {
-    //                //★get_Time 넣는곳 여기서 현재 시간 뽑아서 원하는 정보 뽑음 
-    //                if (node1["fcstTime"].InnerText.Equals(get_Time))
-    //                {
-    //                    if (node1["category"].InnerText.Equals("SKY"))  // 하늘상태일 경우
-    //                    {
-    //                        switch (node1["fcstValue"].InnerText)
-    //                        {
-    //                            case "1":
-    //                                Debug.Log("맑음");
-    //                                break;
-    //                            case "3":
-    //                                Debug.Log("구름많음");
-    //                                break;
-    //                            case "4":
-    //                                Debug.Log("흐림");
-    //                                break;
-    //                            default:
-    //                                Debug.Log("해당하는 자료가 없음");
-    //                                break;
-    //                        }
-    //                    }
-
-    //                    if (node1["category"].InnerText.Equals("PTY"))  // 강수형태일 경우
-    //                    {
-    //                        switch (node1["fcstValue"].InnerText)
-    //                        {
-    //                            case "0":
-    //                                Debug.Log("없음");
-    //                                break;
-    //                            case "1":
-    //                                Debug.Log("비");
-    //                                break;
-    //                            case "2":
-    //                                //비/눈/진눈개비
-    //                                Debug.Log("비/눈/진눈개비");
-    //                                break;
-    //                            case "3":
-    //                                Debug.Log("눈");
-    //                                break;
-    //                            case "4":
-    //                                Debug.Log("소나기");
-    //                                break;
-    //                            default:
-    //                                Debug.Log("해당하는 자료가 없습니다.");
-    //                                break;
-    //                        }
-    //                    }
-
-    //                    if (node1["category"].InnerText.Equals("TMP"))  // 현재 기온 불러옴 
-    //                    {
-    //                        //Debug.Log("TMP 들어감"+ node1["fcstDate"].InnerText);
-    //                        Debug.Log("현재 TMP:" + node1["fcstValue"].InnerText);
-    //                    }
-    //                }
-
-    //            }
-    //        }
+    
 
     IEnumerator LoadData()
     {
@@ -333,7 +295,8 @@ public class Weather : MonoBehaviour
                                 "4" => "흐림",
                                 _ => "알 수 없음"
                             };
-                            Debug.Log($"하늘 상태: {skyCondition}");
+							UpdateSkybox(skyCondition); // 하늘 상태에 따라 스카이박스 업데이트
+							Debug.Log($"하늘 상태: {skyCondition}");
                             break;
                         case "PTY":
                             string precipitationType = fcstValue switch
@@ -352,35 +315,89 @@ public class Weather : MonoBehaviour
             }
         }
     }
-//            else
-//            {
-//                string apiErrorMsg = String.Empty;
 
-//                // API 응답 에러 메세지 조사
-//                apiErrorMsg = node["header"]["resultMsg"].InnerText switch
-//                {
-//                    "APPLICATION_ERROR" => "어플리케이션 에러",
-//                    "DB_ERROR" => "데이터베이스 에러",
-//                    "NODATA_ERROR" => "데이터 없음",
-//                    "HTTP_ERROR" => "HTTP 에러",
-//                    "SERVICETIME_OUT" => "서비스 연결실패",
-//                    "INVALID_REQUEST_PARAMETER_ERROR" => "잘못된 요청 파라메터",
-//                    "NO_MANDATORY_REQUEST_PARAMETERS_ERROR" => "필수요청 파라메터가 없음",
-//                    "NO_OPENAPI_SERVICE_ERROR" => "해당 오픈 API서비스가 없거나 폐기됨",
-//                    "SERVICE_ACCESS_DENIED_ERROR" => "서비스 접근 거부",
-//                    "TEMPORARILY_DISABLE_THE_SERVICEKEY_ERROR" => "일시적으로 사용할 수 없는 서비스 키",
-//                    "LIMITED_NUMBER_OF_SERVICE_REQUESTS_EXCEEDS_ERROR" => "서비스 요청제한횟수 초과",
-//                    "SERVICE_KEY_IS_NOT_REGISTERED_ERROR" => "등록되지 않은 서비스 키",
-//                    "DEADLINE_HAS_EXPIRED_ERROR" => "기한 만료된 서비스 키",
-//                    "UNREGISTERED_IP_ERROR" => "등록되지 않은 IP",
-//                    "UNSIGNED_CALL_ERROR" => "서명되지 않은 호출",
-//                    "UNKNOWN_ERROR" => "기타에러",
-//                    _ => "해당하는 에러가 존재하지 않음",
-//                };
+	private void UpdateSkybox(string skyCondition)
+	{
+		currentSkyCondition = skyCondition;
+		int currentHour = int.Parse(get_Time.Substring(0, 2));
+		Material selectedSkybox = nightCloudySkybox; // 기본값
 
-//                // API 응답 에러 메세지 출력
-//                Debug.Log(apiErrorMsg);
-//            }
-//        }
-//    }
+		// 시간대와 날씨 조건에 따라 스카이박스 선택
+		if ((currentHour >= 17 && currentHour <= 20) || currentHour == 6)
+		{
+			// 일몰/일출 시간대
+			if (skyCondition == "맑음")
+			{
+				selectedSkybox = sunsetClearSkybox;
+			}
+			else // "구름많음" 또는 "흐림"
+			{
+				selectedSkybox = sunsetCloudySkybox;
+			}
+		}
+		else if (currentHour >= 21 || currentHour <= 5)
+		{
+			// 밤 시간대
+			if (skyCondition == "맑음")
+			{
+				selectedSkybox = nightClearSkybox;
+			}
+			else // "구름많음" 또는 "흐림"
+			{
+				selectedSkybox = nightCloudySkybox;
+			}
+		}
+		else if (currentHour >= 7 && currentHour <= 16)
+		{
+			// 낮 시간대
+			if (skyCondition == "맑음")
+			{
+				selectedSkybox = dayClearSkybox;
+			}
+			else if (skyCondition == "구름많음")
+			{
+				selectedSkybox = dayPartlyCloudySkybox;
+			}
+			else // "흐림"
+			{
+				selectedSkybox = dayCloudySkybox;
+			}
+		}
+
+		// 스카이박스 적용
+		RenderSettings.skybox = selectedSkybox;
+		DynamicGI.UpdateEnvironment();
+		Debug.Log($"Changed skybox based on time: {currentHour}:00 and condition: {skyCondition}");
+	}
+	//            else
+	//            {
+	//                string apiErrorMsg = String.Empty;
+
+	//                // API 응답 에러 메세지 조사
+	//                apiErrorMsg = node["header"]["resultMsg"].InnerText switch
+	//                {
+	//                    "APPLICATION_ERROR" => "어플리케이션 에러",
+	//                    "DB_ERROR" => "데이터베이스 에러",
+	//                    "NODATA_ERROR" => "데이터 없음",
+	//                    "HTTP_ERROR" => "HTTP 에러",
+	//                    "SERVICETIME_OUT" => "서비스 연결실패",
+	//                    "INVALID_REQUEST_PARAMETER_ERROR" => "잘못된 요청 파라메터",
+	//                    "NO_MANDATORY_REQUEST_PARAMETERS_ERROR" => "필수요청 파라메터가 없음",
+	//                    "NO_OPENAPI_SERVICE_ERROR" => "해당 오픈 API서비스가 없거나 폐기됨",
+	//                    "SERVICE_ACCESS_DENIED_ERROR" => "서비스 접근 거부",
+	//                    "TEMPORARILY_DISABLE_THE_SERVICEKEY_ERROR" => "일시적으로 사용할 수 없는 서비스 키",
+	//                    "LIMITED_NUMBER_OF_SERVICE_REQUESTS_EXCEEDS_ERROR" => "서비스 요청제한횟수 초과",
+	//                    "SERVICE_KEY_IS_NOT_REGISTERED_ERROR" => "등록되지 않은 서비스 키",
+	//                    "DEADLINE_HAS_EXPIRED_ERROR" => "기한 만료된 서비스 키",
+	//                    "UNREGISTERED_IP_ERROR" => "등록되지 않은 IP",
+	//                    "UNSIGNED_CALL_ERROR" => "서명되지 않은 호출",
+	//                    "UNKNOWN_ERROR" => "기타에러",
+	//                    _ => "해당하는 에러가 존재하지 않음",
+	//                };
+
+	//                // API 응답 에러 메세지 출력
+	//                Debug.Log(apiErrorMsg);
+	//            }
+	//        }
+	//    }
 }
