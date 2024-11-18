@@ -323,7 +323,7 @@ public class Weather : MonoBehaviour
 		Material selectedSkybox = nightCloudySkybox; // 기본값
 
 		// 시간대와 날씨 조건에 따라 스카이박스 선택
-		if ((currentHour >= 17 && currentHour <= 20) || currentHour == 6)
+		if ((currentHour >= 17 && currentHour <= 20) || (currentHour >= 6 && currentHour <= 8))
 		{
 			// 일몰/일출 시간대
 			if (skyCondition == "맑음")
