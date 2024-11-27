@@ -3,22 +3,47 @@ using System.Collections.Generic;
 using UnityEngine;
 public class Following : MonoBehaviour
 {
-	public GameObject followingPointsParent; // 부모 오브젝트
+	public GameObject[] followingPointsPrefabs; 
 	public float moveSpeed = 0.25f;
 	public float finalPathSpeed = 0.1f;
 	private Transform[] followingPoints;
 	private int currentIndex = 0;
 	private float t = 0; // 곡선 보간 값
 
+	// 마지막으로 사용된 경로의 인덱스를 저장
+	private static int lastUsedPathIndex = -1;
+
 	private void Start()
 	{
-		// 부모 오브젝트의 모든 자식을 배열에 저장
-		followingPoints = new Transform[followingPointsParent.transform.childCount];
-		for (int i = 0; i < followingPoints.Length; i++)
+		if (followingPointsPrefabs != null && followingPointsPrefabs.Length > 0)
 		{
-			followingPoints[i] = followingPointsParent.transform.GetChild(i);
+			// 이전 경로를 제외한 랜덤 선택
+			int randomIndex;
+			if (followingPointsPrefabs.Length > 1)
+			{
+				do
+				{
+					randomIndex = Random.Range(0, followingPointsPrefabs.Length);
+				} while (randomIndex == lastUsedPathIndex);
+			}
+			else
+			{
+				randomIndex = 0;
+			}
+
+			// 선택된 인덱스 저장
+			lastUsedPathIndex = randomIndex;
+
+			// 선택된 경로로 초기화
+			GameObject selectedPath = followingPointsPrefabs[randomIndex];
+			followingPoints = new Transform[selectedPath.transform.childCount];
+			for (int i = 0; i < followingPoints.Length; i++)
+			{
+				followingPoints[i] = selectedPath.transform.GetChild(i);
+			}
+
+			StartCoroutine(FollowPath());
 		}
-		StartCoroutine(FollowPath());
 	}
 
 	private IEnumerator FollowPath()
@@ -33,7 +58,7 @@ public class Following : MonoBehaviour
 			while (t < 1f)
 			{
 				// 포인트 9부터 12까지는 느린 속도 적용
-				float currentSpeed = (currentIndex >= 8) ? finalPathSpeed : moveSpeed;
+				float currentSpeed = (currentIndex >= 8 && currentIndex <= 12) ? finalPathSpeed : moveSpeed;
 				t += currentSpeed * Time.deltaTime;
 
 				Vector3 newPosition = CatmullRom(p0, p1, p2, p3, t);

@@ -316,7 +316,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 598aad02f0c602245bee1b5060fe8725, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followingPointsParent: {fileID: 2028295393277963476, guid: aea7995b76914b34b881b89ab436e48f, type: 3}
+  followingPointsPrefabs:
+  - {fileID: 2028295393277963476, guid: aea7995b76914b34b881b89ab436e48f, type: 3}
+  - {fileID: 7324568757113481822, guid: a01131a6585c4d244a954e8de26ee052, type: 3}
+  - {fileID: 3580680933396419748, guid: 0f7a5a2a52bc5e14f8eb126b04d9ab35, type: 3}
+  - {fileID: 79864826853549792, guid: ce77aa7a084734b479b37d320805b631, type: 3}
+  - {fileID: 7313257476374153542, guid: b2acab784640e92428099573efc271ba, type: 3}
   moveSpeed: 0.25
   finalPathSpeed: 0.15
 --- !u!4 &8825482598148552298 stripped
