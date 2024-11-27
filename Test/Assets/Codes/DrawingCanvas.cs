@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using UnityEditor;
-using static UnityEditor.U2D.ScriptablePacker;
+using UnityEditor.U2D;
+//using static UnityEditor.U2D.ScriptablePacker;
 
 public class DrawingCanvas : MonoBehaviour
 {

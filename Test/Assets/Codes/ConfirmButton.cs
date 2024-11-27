@@ -7,13 +7,17 @@ public class ConfirmButton : MonoBehaviour
 {
     public DrawingCanvas drawingCanvas;
     public Button confirmButton;
-    // Start is called before the first frame update
-    void Start()
+	public AudioClip buttonSound;
+	private AudioSource audioSource;
+
+	// Start is called before the first frame update
+	void Start()
     {
         confirmButton = GetComponent<Button>();
+		audioSource = gameObject.AddComponent<AudioSource>();
 
-        // 확인 버튼에 리스너 추가
-        if (confirmButton != null)
+		// 확인 버튼에 리스너 추가
+		if (confirmButton != null)
         {
             confirmButton.onClick.AddListener(OnConfirmButtonClick);
         }
@@ -32,8 +36,9 @@ public class ConfirmButton : MonoBehaviour
     {
         if (drawingCanvas != null)
         {
-            drawingCanvas.SaveCanvasAsTexture();
-        }
+			drawingCanvas.SaveCanvasAsTexture();
+			audioSource.PlayOneShot(buttonSound);
+		}
         else
         {
             Debug.LogError("Cannot save texture: DrawingCanvas reference is null!");
