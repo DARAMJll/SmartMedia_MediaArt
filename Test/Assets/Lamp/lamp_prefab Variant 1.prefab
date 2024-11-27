@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: lamp_prefab Variant 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2745151519562884470, guid: 75db2683fb6b1ea4aa26c689714a7b7a, type: 3}
+      propertyPath: finalPathSpeed
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 3342778652847100636, guid: 75db2683fb6b1ea4aa26c689714a7b7a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 24.160221
