@@ -160,7 +160,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   androidMinAspectRatio: 1
   applicationIdentifier:
-    Standalone: com.DefaultCompany.SmartMedia
+    Standalone: com.Gaeul.SmartMedia
   buildNumber:
     Bratwurst: 0
     Standalone: 0
