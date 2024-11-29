@@ -282,7 +282,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -7964896558954765816, guid: 1abc2e3ccceca8941a10a0c1e36deb55, type: 3}
       propertyPath: m_StaticEditorFlags
-      value: 2147483647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -3763337234803978161, guid: 1abc2e3ccceca8941a10a0c1e36deb55, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -356,8 +356,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea4f16c0e90538047986ceec05a27196, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minAmplitude: 0.1
-  maxAmplitude: 0.5
+  minAmplitude: 0.3
+  maxAmplitude: 0.75
   minFrequency: 0.5
   maxFrequency: 2
   randomPosition: 1
