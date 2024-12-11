@@ -10,6 +10,7 @@ https://drive.google.com/file/d/1-tNGJ-_ETmZ7-yT8SA8ihx8muzTfXAu6/view?usp=shari
 ### 시연 및 전시 영상
 1. https://youtu.be/FlbaF9hnBxU?si=zvPMWMHh_FmYHGUH
 2. https://youtu.be/i2qhdFEWi60?si=qL2yiThUMaz3tBsZ
+
 부록) 날씨에 따른 하늘 배경 변화 https://youtu.be/7sHy_QOyNSY?si=yAOeW3-bvAuAMbnI
 
 ### 개발 일지
