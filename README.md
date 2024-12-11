@@ -1,5 +1,4 @@
-![image](https://github.com/user-attachments/assets/10300c29-f652-4616-83df-764940155d87){: width="100" height="100"}
-
+<img src="https://github.com/user-attachments/assets/10300c29-f652-4616-83df-764940155d87.png"  width="100" height="100"/>
 # 푸르미르 - 인터렉티브 미디어아트 전시
 
 ## 푸르미르 소개
