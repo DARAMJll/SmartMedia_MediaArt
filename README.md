@@ -1,9 +1,9 @@
-![image](https://github.com/user-attachments/assets/10300c29-f652-4616-83df-764940155d87)
+![image](https://github.com/user-attachments/assets/10300c29-f652-4616-83df-764940155d87){: width="100" height="100"}
 
 # 푸르미르 - 인터렉티브 미디어아트 전시
-스마트미디어캡스톤디자인 4조
 
 ## 푸르미르 소개
+스마트미디어캡스톤디자인 4조
 https://drive.google.com/file/d/1-tNGJ-_ETmZ7-yT8SA8ihx8muzTfXAu6/view?usp=sharing
 
 ### 시연 및 전시 영상
