@@ -5,7 +5,7 @@
 
 ## 푸르미르 소개
 스마트미디어캡스톤디자인 4조
-https://drive.google.com/file/d/1-tNGJ-_ETmZ7-yT8SA8ihx8muzTfXAu6/view?usp=sharing
+[https://drive.google.com/file/d/1-tNGJ-_ETmZ7-yT8SA8ihx8muzTfXAu6/view?usp=sharing](https://drive.google.com/drive/folders/1gBKbSaWAejQL_UFm8xBBh8eHh6J0gcrM?usp=sharing)
 
 ### 시연 및 전시 영상
 1. https://youtu.be/FlbaF9hnBxU?si=zvPMWMHh_FmYHGUH
