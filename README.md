@@ -27,5 +27,6 @@
 
 ### 초기 설정
 * Edit - Project Settings - Player - Other Settings - Allow downloads over HTTP - Allow in developments builds
+* 맵 애셋 다운 및 임포트 ( https://assetstore.unity.com/packages/3d/props/khs-gyeongbokgung-palace-vol-1-geunjeongjeon-hall-271915 )
 
 
